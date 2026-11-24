@@ -393,9 +393,17 @@ class MakeOrder extends ComponentSubmitForm
             return $this->prepareAddressData($sType, $arAddressData);
         }
 
+        $arNonEmptyData = array_filter($arAddressData, function ($mValue) {
+            return $mValue !== null && $mValue !== [] && (!is_string($mValue) || trim($mValue) !== '');
+        });
+        if (empty($arNonEmptyData)) {
+            return [];
+        }
+
         $arResult = $this->findAddressByID($sType, $arAddressData);
 
         if (empty($arResult)) {
+            $arAddressData['type'] = $sType;
             $obAddress = UserAddress::findAddressByData($arAddressData, $this->obUser->id);
             if (!empty($obAddress)) {
                 $arResult = $this->getAddressData($obAddress);

@@ -141,7 +141,13 @@ class UserAddress extends Model
         }
 
         //Get user address list
-        $obAddressList = UserAddress::getByUser($iUserID)->get();
+        $obQuery = UserAddress::getByUser($iUserID);
+        $sType = array_get($arFindAddress, 'type');
+        if (!empty($sType)) {
+            $obQuery->getByType($sType);
+        }
+
+        $obAddressList = $obQuery->get();
         if ($obAddressList->isEmpty()) {
             return null;
         }
